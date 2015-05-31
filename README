@@ -1,0 +1,21 @@
+
+# rss2maildir
+
+## What does it do?
+
+## How to install?
+
+
+
+## Dependencies
+
+The python modules that are required are:
+
+feedparser
+mailbox
+
+All other modules should be part of the standard library.
+
+## License
+
+This script is released under the GPL.
