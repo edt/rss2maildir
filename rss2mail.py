@@ -187,7 +187,7 @@ def download_feed(feed):
         print ("No new messages.")
 
 
-def help():
+def print_help():
     """Prints help text and arguments"""
     print ("""{0}
 
@@ -209,12 +209,12 @@ def main(argv):
                                    "hc:t:",
                                    ["help", "config=", "cache="])
     except getopt.GetoptError:
-        help()
+        print_help()
         sys.exit(2)
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            help()
+            print_help()
             sys.exit()
         elif opt in ("-c", "--config"):
             defaults.config = arg
