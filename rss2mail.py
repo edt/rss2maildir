@@ -94,18 +94,13 @@ def update_maildir(maildir, rss, origin):
 
         print ("seconds: {0} - date {1}".format(seconds, rss.published))
         msg.set_date(seconds)
-        # print (rss.link)
-        # print (rss.description)
 
         message = (rss.link
                    + "\n"
                    + rss.description)
-        # message = rss.link + "\n\n" + "bla"
-        # message = unicode(message,
-        #                   'ignore')
 
         msg.set_payload(message.encode('utf-8'))
-        # + html2text.html2text((rss.description)).encode('utf-8'))
+
         mbox.add(msg)
         mbox.flush()
 
