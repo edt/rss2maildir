@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""This script downloads rss feeds and stores them in a maildir"""
 
 # Copyright(C) 2015 Edgar Thier
 #
@@ -120,6 +121,7 @@ def load_cache(rss_list):
 
 
 def save_object(obj, filename):
+    """Save object to given file"""
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
@@ -137,7 +139,12 @@ def write_cache(rss_list):
 
 
 def extract_new_items(new_list, old_list):
-    """"""
+    """Extract new feed entries
+    new_list - list from which new entries shall be extracted
+    old_list - list whith which new_list is compared
+
+    returns array of entries found in new_list and not in old_list
+    """
     has_guid = False
 
     new_entries = []
@@ -202,7 +209,7 @@ Options:
 
 
 def main(argv):
-    """"""
+    """Entry point"""
 
     try:
         opts, args = getopt.getopt(argv,
