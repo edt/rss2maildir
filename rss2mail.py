@@ -160,33 +160,33 @@ def extract_new_items(new_list, old_list):
     return new_entries
 
 
-def download_feed(f):
+def download_feed(feed):
     """
-    f - rss_feed object
+    feed - rss_feed object
     """
-    print ("=== Checking feed '{0}'".format(f.name))
+    print ("=== Checking feed '{0}'".format(feed.name))
 
-    if f.url is None:
+    if feed.url is None:
         print ("No viable url found! Aborting feed...")
         return False
 
-    print ("Downloading '{0}'...".format(f.url))
-    f.feed = feedparser.parse(f.url)
+    print ("Downloading '{0}'...".format(feed.url))
+    feed.feed = feedparser.parse(feed.url)
 
-    if f.cache is not None:
+    if feed.cache is not None:
         # diff the two lists and only use new entries
-        new_entries = extract_new_items(f.feed.entries, f.cache.entries)
+        new_entries = extract_new_items(feed.feed.entries, feed.cache.entries)
 
         for item in new_entries:
             print ("NEW ENTRY {0}".format(item.title))
     else:
         # it is a new feed
-        new_entries = f.feed.entries
+        new_entries = feed.feed.entries
 
-    maildir = defaults.maildir + f.name
+    maildir = defaults.maildir + feed.name
     if new_entries:
         for item in new_entries:
-            update_maildir(maildir, item, f.feed['feed']['title'])
+            update_maildir(maildir, item, feed.feed['feed']['title'])
 
     else:
         print ("No new messages.")
