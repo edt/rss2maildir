@@ -111,12 +111,12 @@ def update_maildir(maildir, rss, origin):
 def load_cache(rss_list):
     """Load cache file and fill rss feeds with their values"""
 
-    for r in rss_list:
-        filename = os.path.expanduser(defaults.cache) + "/" + r.name
+    for rss in rss_list:
+        filename = os.path.expanduser(defaults.cache) + "/" + rss.name
 
         if os.path.isfile(filename):
-            with open(filename, 'rb') as input:
-                r.cache = pickle.load(input)
+            with open(filename, 'rb') as input_file:
+                rss.cache = pickle.load(input_file)
 
 
 def save_object(obj, filename):
@@ -131,9 +131,9 @@ def write_cache(rss_list):
     if not os.path.exists(defaults.cache):
         os.makedirs(defaults.cache)
 
-    for r in rss_list:
-        filename = os.path.expanduser(defaults.cache) + "/" + r.name
-        save_object(r.feed, filename)
+    for rss in rss_list:
+        filename = os.path.expanduser(defaults.cache) + "/" + rss.name
+        save_object(rss.feed, filename)
 
 
 def extract_new_items(new_list, old_list):
@@ -224,8 +224,8 @@ def main(argv):
     feeds = load_config()
     load_cache(feeds)
 
-    for f in feeds:
-        download_feed(f)
+    for single_feed in feeds:
+        download_feed(single_feed)
 
     write_cache(feeds)
 
