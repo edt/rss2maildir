@@ -24,6 +24,8 @@ import sys
 import getopt
 import pickle
 import time
+import json
+
 
 
 class defaults:
@@ -47,9 +49,26 @@ class rss_feed:
 
 
 def load_config():
-    """"""
-    # json_data = open(defaults.config).read()
-    # config = json.loads(json_data)
+    """Load configuration from JSON"""
+    json_data = open(defaults.config).read()
+    config = json.loads(json_data)
+
+    config["general"]["cache"]
+
+    feed_list = []
+
+    for single_feed in config["feeds"]:
+        feed = rss_feed()
+        feed.name = single_feed["name"]
+        feed.url = single_feed["url"]
+        feed.maildir = defaults.maildir + "/" + feed.name
+
+        if not feed.name:
+            exit(1)
+        if not feed.url:
+            exit(2)
+        feed_list.append(feed)
+
 
     x = rss_feed()
     x.name = "xkcd"
@@ -67,7 +86,9 @@ def load_config():
     g.name = "golem"
     g.url = "http://rss.golem.de/rss.php?feed=RSS2.0"
 
-    return [x, h, g]
+    return feed_list
+
+
 
 
 def update_maildir(maildir, rss, origin):
