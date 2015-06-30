@@ -23,6 +23,8 @@ import feedparser
 import sys
 import getopt
 import pickle
+import datetime
+import re
 import time
 import json
 
@@ -104,18 +106,30 @@ def update_maildir(maildir, rss, origin):
         # set message time to publish time
         # feedparser has the format u'Thu, 05 Sep 2002 00:00:01 GMT'
         # "%a, %d %b %Y %H:%M:%S +0000"
-        seconds = float(time.mktime(time.strptime(rss.published,
-                                                  '%a, %d %b %Y %H:%M:%S %Z')))
+
         msg = mailbox.MaildirMessage()
         # msg.set_charset('utf-8')
-        msg.set_unixfrom('{0} {1}'.format(origin, rss.published))
+        if 'published' in rss:
+            msg.set_unixfrom('{0} Date: {1}'.format(origin, rss.published))
+            msg.__setitem__('Date', rss.published)
+        elif 'updated' in rss:
+            # atom feeds use '2015-05-31T19:57:15+02:00'
+            # python requires timezone offset to be without :
+            time_string = rss.updated
+            k = rss.updated.rfind(":")
+            time_string = time_string[:k] + time_string[k+1:]
+
+            entry_time = time.strptime(time_string, '%Y-%m-%dT%H:%M:%S%z')
+            msg.__setitem__('Date',
+                            time.strftime("%a, %d %b %Y %H:%M:%S %z",
+                                          entry_time))
+        else:
+            print ("no date available")
+        print (rss)
+
         msg['From'] = origin
         msg['To'] = defaults.mail_recipient
-        # msg['To'] = "bla"
         msg['Subject'] = rss.title
-
-        print ("seconds: {0} - date {1}".format(seconds, rss.published))
-        msg.set_date(seconds)
 
         message = (rss.link
                    + "\n"
