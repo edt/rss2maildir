@@ -212,9 +212,9 @@ Options:
 \t-h print help text
 \t-c define config to use [default: {1}]
 \t-t define cache directory to use [default: {2}]
-""").format(sys.argv[0],
-            defaults.config,
-            defaults.cache)
+""".format(sys.argv[0],
+           defaults.config,
+           defaults.cache))
 
 
 def main(argv):
