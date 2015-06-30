@@ -23,11 +23,8 @@ import feedparser
 import sys
 import getopt
 import pickle
-import datetime
-import re
 import time
 import json
-
 
 
 class defaults:
@@ -71,26 +68,7 @@ def load_config():
             exit(2)
         feed_list.append(feed)
 
-
-    x = rss_feed()
-    x.name = "xkcd"
-    x.url = "https://xkcd.com/rss.xml"
-    # x.url = "/home/edt/work/projects/rss2mail/rss.xml"
-    x.maildir = "~/.mail/rss/xkcd"
-
-    h = rss_feed()
-    h.name = "heise"
-    h.url = "http://www.heise.de/newsticker/heise-atom.xml"
-    # h.url = "/home/edt/work/projects/rss2mail/heise-atom.xml"
-    h.maildir = "~/.mail/rss/heise"
-
-    g = rss_feed()
-    g.name = "golem"
-    g.url = "http://rss.golem.de/rss.php?feed=RSS2.0"
-
     return feed_list
-
-
 
 
 def update_maildir(maildir, rss, origin):
@@ -103,10 +81,6 @@ def update_maildir(maildir, rss, origin):
     mbox = mailbox.Maildir(maildir)
     mbox.lock()
     try:
-        # set message time to publish time
-        # feedparser has the format u'Thu, 05 Sep 2002 00:00:01 GMT'
-        # "%a, %d %b %Y %H:%M:%S +0000"
-
         msg = mailbox.MaildirMessage()
         # msg.set_charset('utf-8')
         if 'published' in rss:
