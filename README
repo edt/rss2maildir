@@ -3,6 +3,9 @@
 
 ## What does it do?
 
+It downloads newsfeeds and stores them in a local maildir,
+so that you can read them with your mail client.
+
 ## How to install?
 
 
