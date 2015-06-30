@@ -25,16 +25,16 @@ import getopt
 import pickle
 import time
 import json
+import getpass
 
 
 class defaults:
     """Contains global default values"""
     maildir = os.path.expanduser("~/.mail/rss/")
-    config = os.path.expanduser("~/work/projects/rss2mail/rss2mail.json")
-    # cache = os.path.expanduser("~/.cache/rss2mail")
-    cache = os.path.expanduser("~/work/projects/rss2mail/rss2mail.cache")
+    config = os.path.expanduser("~/.cache/rss2maildir.json")
+    cache = os.path.expanduser("~/.cache/rss2mail/")
     mail_sender = "rss2mail"
-    mail_recipient = "edt@localhost"
+    mail_recipient = getpass.getuser() + "@localhost"
 
 
 class rss_feed:
