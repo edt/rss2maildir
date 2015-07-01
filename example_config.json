@@ -1,0 +1,20 @@
+{
+    "general": {
+        "maildir": "~/.mail/rss",
+        "cache": "~/.cache/rss2maildir/",
+        "use_maildir_cache": true,
+        "use_single_maildir": true,
+        "mail_sender": "rss2emaildir"
+
+    },
+    "feeds": [
+        {
+            "name": "rss2maildir",
+            "url": "https://github.com/edt-devel/rss2maildir/commits/master.atom"
+        },
+        {
+            "name": "HackerNews",
+            "url": "https://news.ycombinator.com/rss"
+        }
+    ]
+}
