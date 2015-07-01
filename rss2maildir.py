@@ -33,6 +33,7 @@ class defaults:
     maildir = os.path.expanduser("~/.mail/rss/")
     config = os.path.expanduser("~/.cache/rss2maildir.json")
     cache = os.path.expanduser("~/.cache/rss2mail/")
+    use_single_maildir = False
     mail_sender = "rss2mail"
     mail_recipient = getpass.getuser() + "@localhost"
 
@@ -52,7 +53,11 @@ def load_config():
     json_data = open(defaults.config).read()
     config = json.loads(json_data)
 
-    config["general"]["cache"]
+    if config["general"]["use_single_maildir"]:
+        defaults.use_single_maildir = config["general"]["use_single_maildir"]
+        if not isinstance(defaults.use_single_maildir, bool):
+            print ("use_single_maildir has to be true or false")
+            exit(1)
 
     feed_list = []
 
@@ -194,7 +199,12 @@ def download_feed(feed):
         # it is a new feed
         new_entries = feed.feed.entries
 
-    maildir = defaults.maildir + feed.name
+    maildir = ""
+    if defaults.use_single_maildir:
+        maildir = defaults.maildir
+    else:
+        maildir = defaults.maildir + feed.name
+
     if new_entries:
         for item in new_entries:
             update_maildir(maildir, item, feed.feed['feed']['title'])
