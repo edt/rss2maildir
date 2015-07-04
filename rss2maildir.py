@@ -85,7 +85,14 @@ def load_config():
         feed = rss_feed()
         feed.name = single_feed["name"]
         feed.url = single_feed["url"]
-        feed.maildir = defaults.maildir + "/" + feed.name
+
+        if defaults.use_single_maildir:
+            feed.maildir = defaults.maildir
+        else:
+            feed.maildir = defaults.maildir + "/" + feed.name
+
+        if 'maildir' in single_feed:
+            feed.maildir = single_feed["maildir"]
 
         if not feed.name:
             exit(1)
@@ -281,11 +288,7 @@ def download_feed(feed):
         # it is a new feed
         new_entries = feed.feed.entries
 
-    maildir = ""
-    if defaults.use_single_maildir:
-        maildir = defaults.maildir
-    else:
-        maildir = defaults.maildir + feed.name
+    maildir = feed.maildir
 
     if new_entries:
         for item in new_entries:
