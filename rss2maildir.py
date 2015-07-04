@@ -67,6 +67,12 @@ def load_config():
             print ("use_maildir_cache has to be true or false")
             exit(1)
 
+    if config["general"]["mail_sender"]:
+        defaults.mail_sender = config["general"]["mail_sender"]
+        if not isinstance(defaults.mail_sender, str):
+            print ("mail_sender has to be a string")
+            exit(1)
+
     if config["general"]["cache"]:
         defaults.cache = config["general"]["cache"]
         if not isinstance(defaults.cache, str):
