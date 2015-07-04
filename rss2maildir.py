@@ -33,7 +33,9 @@ class defaults:
     maildir = os.path.expanduser("~/.mail/rss/")
     config = os.path.expanduser("~/.cache/rss2maildir.json")
     cache = os.path.expanduser("~/.cache/rss2mail/")
+    maildir_cache = os.path.expanduser("~/.mail/rss/rss2maildircache")
     use_single_maildir = False
+    use_maildir_cache = False
     mail_sender = "rss2mail"
     mail_recipient = getpass.getuser() + "@localhost"
 
@@ -57,6 +59,18 @@ def load_config():
         defaults.use_single_maildir = config["general"]["use_single_maildir"]
         if not isinstance(defaults.use_single_maildir, bool):
             print ("use_single_maildir has to be true or false")
+            exit(1)
+
+    if config["general"]["use_maildir_cache"]:
+        defaults.use_maildir_cache = config["general"]["use_maildir_cache"]
+        if not isinstance(defaults.use_maildir_cache, bool):
+            print ("use_maildir_cache has to be true or false")
+            exit(1)
+
+    if config["general"]["cache"]:
+        defaults.cache = config["general"]["cache"]
+        if not isinstance(defaults.cache, str):
+            print ("cache has to be a string")
             exit(1)
 
     feed_list = []
@@ -150,6 +164,69 @@ def write_cache(rss_list):
     for rss in rss_list:
         filename = os.path.expanduser(defaults.cache) + "/" + rss.name
         save_object(rss.feed, filename)
+
+
+def read_mail_cache(rss_list):
+    """Read cache from Maildir and fill rss_list caches where possible"""
+    print ("Reading mail cache {0}".format(defaults.cache))
+    mbox = mailbox.Maildir(defaults.cache)
+    mbox.lock()
+    try:
+        for message in mbox:
+            byte_pickle = message.get_payload(decode=True)
+            for rss in rss_list:
+                print ("    Comparing {0} to {1}".format(message['subject'],
+                                                         rss.name))
+                if rss.name == message['subject']:
+                    print ("Found cache for {0}".format(rss.name))
+                    rss.cache = pickle.loads(byte_pickle)
+                    break
+
+    finally:
+        mbox.unlock()
+
+
+def clear_mail_cache():
+    """Delete all mails found in cache Maildir"""
+    mbox = mailbox.Maildir(defaults.cache)
+    mbox.lock()
+    for key, msg in mbox.iteritems():
+        mbox.remove(key)
+        mbox.flush()
+        mbox.close()
+
+
+def write_mail_cache(rss_list):
+    """
+    Write elleents from rss_list to Maildir
+    """
+
+    # Ensure mail cache is empty, so that we do not produce duplicates
+    clear_mail_cache()
+    print ("Writing mail cache {0}".format(defaults.cache))
+    mbox = mailbox.Maildir(defaults.cache)
+    mbox.lock()
+    try:
+        for f in rss_list:
+            msg = mailbox.MaildirMessage()
+
+            msg.__setitem__('Date',
+                            time.strftime("%a, %d %b %Y %H:%M:%S %z",
+                                          time.gmtime()))
+
+            msg['From'] = defaults.mail_sender
+            msg['To'] = defaults.mail_recipient
+            msg['Subject'] = f.name
+            byte_pickle = pickle.dumps(f.feed, protocol=0)
+
+            msg.set_payload(byte_pickle)
+            print ("Saving mail cache for {0}".format(f.name))
+
+            mbox.add(msg)
+            mbox.flush()
+
+    finally:
+        mbox.unlock()
 
 
 def extract_new_items(new_list, old_list):
@@ -248,12 +325,20 @@ def main(argv):
             defaults.cache = arg
 
     feeds = load_config()
-    load_cache(feeds)
+
+    if defaults.use_maildir_cache:
+        defaults.cache = defaults.maildir_cache
+        read_mail_cache(feeds)
+    else:
+        load_cache(feeds)
 
     for single_feed in feeds:
         download_feed(single_feed)
 
-    write_cache(feeds)
+    if defaults.use_maildir_cache:
+        write_mail_cache(feeds)
+    else:
+        write_cache(feeds)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
