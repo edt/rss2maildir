@@ -107,7 +107,7 @@ def update_maildir(maildir, rss, origin):
             msg.__setitem__('Date', rss.published)
         elif 'updated' in rss:
             # atom feeds use '2015-05-31T19:57:15+02:00'
-            # python requires timezone offset to be without :
+            # python requires timezone offset to be without ':'
             time_string = rss.updated
             k = rss.updated.rfind(":")
             time_string = time_string[:k] + time_string[k+1:]
@@ -118,7 +118,6 @@ def update_maildir(maildir, rss, origin):
                                           entry_time))
         else:
             print ("no date available")
-        print (rss)
 
         msg['From'] = origin
         msg['To'] = defaults.mail_recipient
@@ -248,6 +247,7 @@ def extract_new_items(new_list, old_list):
             for j in old_list:
                 if item.link == j.link:
                     is_new = False
+                    break
             if is_new:
                 new_entries.append(item)
     return new_entries
@@ -257,7 +257,6 @@ def download_feed(feed):
     """
     feed - rss_feed object
     """
-    print ("=== Checking feed '{0}'".format(feed.name))
 
     if feed.url is None:
         print ("No viable url found! Aborting feed...")
@@ -271,7 +270,7 @@ def download_feed(feed):
         new_entries = extract_new_items(feed.feed.entries, feed.cache.entries)
 
         for item in new_entries:
-            print ("NEW ENTRY {0}".format(item.title))
+            print ("    New entry: {0}".format(item.title))
     else:
         # it is a new feed
         new_entries = feed.feed.entries
@@ -287,7 +286,7 @@ def download_feed(feed):
             update_maildir(maildir, item, feed.feed['feed']['title'])
 
     else:
-        print ("No new messages.")
+        print ("    No new messages.")
 
 
 def print_help():
