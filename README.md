@@ -85,7 +85,7 @@ Drop all mails into a single Maildir (defined via general:maildir), unless a fee
 
 **default:** false
 
-#### general:mail_sender
+#### general:sender
 
 Content of the "From" field
 

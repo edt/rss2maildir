@@ -4,8 +4,7 @@
         "cache": "~/.cache/rss2maildir/",
         "use_maildir_cache": true,
         "use_single_maildir": true,
-        "mail_sender": "rss2emaildir"
-
+        "sender": "rss2emaildir"
     },
     "feeds": [
         {
