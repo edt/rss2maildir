@@ -73,6 +73,12 @@ def load_config():
             print ("mail_sender has to be a string")
             exit(1)
 
+    if config["general"]["recipient"]:
+        defaults.mail_recipient = config["general"]["recipient"]
+        if not isinstance(defaults.mail_recipient, str):
+            print ("mail_sender has to be a string")
+            exit(1)
+
     if config["general"]["cache"]:
         defaults.cache = config["general"]["cache"]
         if not isinstance(defaults.cache, str):

@@ -90,6 +90,12 @@ Content of the "From" field
 
 **default:** rss2maildir
 
+#### general:recipient
+
+Content of the "To" field
+
+**default:** ${USER}@localhost
+
 #### feeds:name
 
 Identifying name of your feed. It will also be used to create a Maildir with equal name under general:maildir
