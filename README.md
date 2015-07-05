@@ -12,12 +12,13 @@ Create a cronjob to regularly call rss2maildir.py.
 
 ## Dependencies
 
-The python modules that are required are:
+The python3 modules that are required are:
 
 feedparser
 mailbox
 
 All other modules should be part of the standard library.
+This script is python 3 only.
 
 ## Configuration
 
