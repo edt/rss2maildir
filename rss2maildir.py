@@ -55,31 +55,31 @@ def load_config():
     json_data = open(defaults.config).read()
     config = json.loads(json_data)
 
-    if config["general"]["use_single_maildir"]:
+    if "use_single_maildir" in config["general"]:
         defaults.use_single_maildir = config["general"]["use_single_maildir"]
         if not isinstance(defaults.use_single_maildir, bool):
             print ("use_single_maildir has to be true or false")
             exit(1)
 
-    if config["general"]["use_maildir_cache"]:
+    if "use_maildir_cache" in config["general"]:
         defaults.use_maildir_cache = config["general"]["use_maildir_cache"]
         if not isinstance(defaults.use_maildir_cache, bool):
             print ("use_maildir_cache has to be true or false")
             exit(1)
 
-    if config["general"]["sender"]:
+    if "sender" in config["general"]:
         defaults.mail_sender = config["general"]["sender"]
         if not isinstance(defaults.mail_sender, str):
             print ("sender has to be a string")
             exit(1)
 
-    if config["general"]["recipient"]:
+    if "recipient" in config["general"]:
         defaults.mail_recipient = config["general"]["recipient"]
         if not isinstance(defaults.mail_recipient, str):
             print ("recipient has to be a string")
             exit(1)
 
-    if config["general"]["cache"]:
+    if "cache" in config["general"]:
         defaults.cache = config["general"]["cache"]
         if not isinstance(defaults.cache, str):
             print ("cache has to be a string")
