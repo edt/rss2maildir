@@ -107,8 +107,10 @@ def load_config():
             feed.maildir = single_feed["maildir"]
 
         if not feed.name:
+            print ("Missing feed name. Aborting...")
             exit(1)
         if not feed.url:
+            print ("Missing feed url. Aborting...")
             exit(2)
         feed_list.append(feed)
 
