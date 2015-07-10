@@ -136,13 +136,24 @@ def update_maildir(maildir, rss, origin):
             # atom feeds use '2015-05-31T19:57:15+02:00'
             # python requires timezone offset to be without ':'
             time_string = rss.updated
-            k = rss.updated.rfind(":")
-            time_string = time_string[:k] + time_string[k+1:]
+            if 'Z' in time_string:
+                # special cases like: http://www.geeksworld.org/flux.rss.php
+                # do not set utc offset
+                # their timestamp looks like 2015-07-06T00:01:00Z
+                entry_time = time.strptime(time_string, '%Y-%m-%dT%H:%M:%SZ')
+                msg.__setitem__('Date',
+                                time.strftime("%a, %d %b %Y %H:%M:%S %z",
+                                              entry_time))
 
-            entry_time = time.strptime(time_string, '%Y-%m-%dT%H:%M:%S%z')
-            msg.__setitem__('Date',
-                            time.strftime("%a, %d %b %Y %H:%M:%S %z",
-                                          entry_time))
+            else:
+
+                k = rss.updated.rfind(":")
+                time_string = time_string[:k] + time_string[k+1:]
+
+                entry_time = time.strptime(time_string, '%Y-%m-%dT%H:%M:%S%z')
+                msg.__setitem__('Date',
+                                time.strftime("%a, %d %b %Y %H:%M:%S %z",
+                                              entry_time))
         else:
             print ("no date available")
 
