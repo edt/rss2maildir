@@ -85,6 +85,12 @@ def load_config():
             print ("cache has to be a string")
             exit(1)
 
+    if "maildir" in config["general"]:
+        defaults.maildir = config["general"]["maildir"]
+        if not isinstance(defaults.cache, str):
+            print ("maildir has to be a string")
+            exit(1)
+
     feed_list = []
 
     for single_feed in config["feeds"]:
