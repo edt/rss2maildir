@@ -210,7 +210,7 @@ def read_mail_cache(rss_list):
     mbox = mailbox.Maildir(defaults.cache)
     mbox.lock()
     try:
-        for message in mbox:
+        for key, message in mbox.iteritems():
             byte_pickle = message.get_payload(decode=True)
             for rss in rss_list:
                 print ("    Comparing {0} to {1}".format(message['subject'],
@@ -218,6 +218,8 @@ def read_mail_cache(rss_list):
                 if rss.name == message['subject']:
                     print ("Found cache for {0}".format(rss.name))
                     rss.cache = pickle.loads(byte_pickle)
+                    mbox.remove(key)
+                    mbox.flush()
                     break
 
     finally:
@@ -240,7 +242,7 @@ def write_mail_cache(rss_list):
     """
 
     # Ensure mail cache is empty, so that we do not produce duplicates
-    clear_mail_cache()
+    # clear_mail_cache()
     print ("Writing mail cache {0}".format(defaults.cache))
     mbox = mailbox.Maildir(defaults.cache)
     mbox.lock()
