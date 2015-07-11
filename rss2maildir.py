@@ -57,6 +57,7 @@ def load_config():
 
     if "use_single_maildir" in config["general"]:
         defaults.use_single_maildir = config["general"]["use_single_maildir"]
+        defaults.cache = defaults.maildir_cache
         if not isinstance(defaults.use_single_maildir, bool):
             print ("use_single_maildir has to be true or false")
             exit(1)
@@ -360,7 +361,6 @@ def main(argv):
     feeds = load_config()
 
     if defaults.use_maildir_cache:
-        defaults.cache = defaults.maildir_cache
         read_mail_cache(feeds)
     else:
         load_cache(feeds)
