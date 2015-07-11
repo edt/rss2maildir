@@ -102,7 +102,7 @@ def load_config():
         if defaults.use_single_maildir:
             feed.maildir = defaults.maildir
         else:
-            feed.maildir = defaults.maildir + "/" + feed.name
+            feed.maildir = defaults.maildir + "." + feed.name
 
         if 'maildir' in single_feed:
             feed.maildir = single_feed["maildir"]
