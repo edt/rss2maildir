@@ -124,7 +124,7 @@ def update_maildir(maildir, rss, origin):
     maildir - Maildir that shall be used
     rss - feedparser entry that shall be converted
     """
-    print ("Opening {0}".format(maildir))
+    print ("Writing {0}".format(rss.title))
     mbox = mailbox.Maildir(maildir)
     mbox.lock()
     try:
