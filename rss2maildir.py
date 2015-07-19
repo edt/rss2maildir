@@ -33,7 +33,7 @@ class defaults:
     maildir = os.path.expanduser("~/.mail/rss/")
     config = os.path.expanduser("~/.cache/rss2maildir.json")
     cache = os.path.expanduser("~/.cache/rss2mail/")
-    maildir_cache = os.path.expanduser("~/.mail/rss/rss2maildircache")
+    maildir_cache = os.path.expanduser("~/.mail/rss.rss2maildircache")
     use_single_maildir = False
     use_maildir_cache = False
     mail_sender = "rss2mail"
