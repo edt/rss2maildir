@@ -162,9 +162,14 @@ def update_maildir(maildir, rss, origin):
         msg['To'] = defaults.mail_recipient
         msg['Subject'] = rss.title
 
-        message = (rss.link
-                   + "\n"
-                   + rss.description)
+        message_text = ""
+
+        if "link" in rss:
+            message_text = rss.link + "\n"
+
+        if "description" in rss:
+            message_text = message_text + rss.description
+        message = message_text
 
         msg.set_payload(message.encode('utf-8'))
 
