@@ -283,19 +283,27 @@ def extract_new_items(new_list, old_list):
     """
     has_guid = False
 
+    if "id" in new_list[0]:
+        has_guid = True
+
     new_entries = []
     for item in new_list:
+        is_new = True
+
         if has_guid:
-            # todo
-            continue
+            for j in old_list:
+                if item.id == j.id:
+                    is_new = False
+                    break
         else:
-            is_new = True
             for j in old_list:
                 if item.link == j.link:
                     is_new = False
                     break
-            if is_new:
-                new_entries.append(item)
+
+        if is_new:
+            new_entries.append(item)
+
     return new_entries
 
 
