@@ -8,7 +8,12 @@ so that you can read them with your mail client.
 
 ## How to install?
 
-Create a cronjob to regularly call rss2maildir.py.
+Assuming rss2maildir.py is in your PATH and you use the default config location
+install the script by adding
+
+0    *    *    *    *    rss2maildir.py > /dev/null
+
+into you crontab.
 
 ## Dependencies
 
