@@ -216,7 +216,12 @@ def read_mail_cache(rss_list):
     mbox.lock()
     try:
         for key, message in mbox.iteritems():
-            byte_pickle = message.get_payload(decode=True)
+            try:
+                byte_pickle = message.get_payload(decode=True)
+            except:
+                print ("Unable to open cache file ignoring")
+                continue
+
             for rss in rss_list:
                 print ("    Comparing {0} to {1}".format(message['subject'],
                                                          rss.name))
@@ -243,7 +248,7 @@ def clear_mail_cache():
 
 def write_mail_cache(rss_list):
     """
-    Write elleents from rss_list to Maildir
+    Write elements from rss_list to Maildir
     """
 
     # Ensure mail cache is empty, so that we do not produce duplicates
@@ -253,6 +258,7 @@ def write_mail_cache(rss_list):
     mbox.lock()
     try:
         for f in rss_list:
+            print ("Saving at: {0}".format(f.name))
             msg = mailbox.MaildirMessage()
 
             msg.__setitem__('Date',
@@ -262,12 +268,19 @@ def write_mail_cache(rss_list):
             msg['From'] = defaults.mail_sender
             msg['To'] = defaults.mail_recipient
             msg['Subject'] = f.name
-            byte_pickle = pickle.dumps(f.feed, protocol=0)
+            try:
+                byte_pickle = pickle.dumps(f.feed, protocol=0)
+                # byte_pickle = dill.dumps(f.feed)
 
-            msg.set_payload(byte_pickle)
-            print ("Saving mail cache for {0}".format(f.name))
+                msg.set_payload(byte_pickle)
+                print ("Saving mail cache for {0}".format(f.name))
 
-            mbox.add(msg)
+                mbox.add(msg)
+
+            except:
+                print ("Unable to create cache object for {0}".format(f.name))
+                continue
+
             mbox.flush()
 
     finally:
@@ -282,6 +295,10 @@ def extract_new_items(new_list, old_list):
     returns array of entries found in new_list and not in old_list
     """
     has_guid = False
+
+    if not new_list:
+        print ("Empty list!")
+        return []
 
     if "id" in new_list[0]:
         has_guid = True
@@ -318,6 +335,10 @@ def download_feed(feed):
 
     print ("Downloading '{0}'...".format(feed.url))
     feed.feed = feedparser.parse(feed.url)
+
+    if not feed.feed:
+        print ("Unable to download {0}".format(feed.url))
+        return
 
     if feed.cache is not None:
         # diff the two lists and only use new entries
