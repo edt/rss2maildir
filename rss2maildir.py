@@ -60,37 +60,37 @@ def load_config():
         defaults.use_single_maildir = config["general"]["use_single_maildir"]
         defaults.cache = defaults.maildir_cache
         if not isinstance(defaults.use_single_maildir, bool):
-            print ("use_single_maildir has to be true or false")
+            print("use_single_maildir has to be true or false")
             exit(1)
 
     if "use_maildir_cache" in config["general"]:
         defaults.use_maildir_cache = config["general"]["use_maildir_cache"]
         if not isinstance(defaults.use_maildir_cache, bool):
-            print ("use_maildir_cache has to be true or false")
+            print("use_maildir_cache has to be true or false")
             exit(1)
 
     if "sender" in config["general"]:
         defaults.mail_sender = config["general"]["sender"]
         if not isinstance(defaults.mail_sender, str):
-            print ("sender has to be a string")
+            print("sender has to be a string")
             exit(1)
 
     if "recipient" in config["general"]:
         defaults.mail_recipient = config["general"]["recipient"]
         if not isinstance(defaults.mail_recipient, str):
-            print ("recipient has to be a string")
+            print("recipient has to be a string")
             exit(1)
 
     if "cache" in config["general"]:
         defaults.cache = config["general"]["cache"]
         if not isinstance(defaults.cache, str):
-            print ("cache has to be a string")
+            print("cache has to be a string")
             exit(1)
 
     if "maildir" in config["general"]:
         defaults.maildir = config["general"]["maildir"]
         if not isinstance(defaults.cache, str):
-            print ("maildir has to be a string")
+            print("maildir has to be a string")
             exit(1)
 
     feed_list = []
@@ -109,10 +109,10 @@ def load_config():
             feed.maildir = single_feed["maildir"]
 
         if not feed.name:
-            print ("Missing feed name. Aborting...")
+            print("Missing feed name. Aborting...")
             exit(1)
         if not feed.url:
-            print ("Missing feed url. Aborting...")
+            print("Missing feed url. Aborting...")
             exit(2)
         feed_list.append(feed)
 
@@ -125,7 +125,7 @@ def update_maildir(maildir, rss, origin):
     maildir - Maildir that shall be used
     rss - feedparser entry that shall be converted
     """
-    print ("Writing {0}".format(rss.title))
+    print("Writing {0}".format(rss.title))
     mbox = mailbox.Maildir(maildir)
     mbox.lock()
     try:
@@ -157,7 +157,7 @@ def update_maildir(maildir, rss, origin):
                                 time.strftime("%a, %d %b %Y %H:%M:%S %z",
                                               entry_time))
         else:
-            print ("no date available")
+            print("no date available")
 
         msg['From'] = origin
         msg['To'] = defaults.mail_recipient
@@ -213,7 +213,7 @@ def write_cache(rss_list):
 
 def read_mail_cache(rss_list):
     """Read cache from Maildir and fill rss_list caches where possible"""
-    print ("Reading mail cache {0}".format(defaults.cache))
+    print("Reading mail cache {0}".format(defaults.cache))
     mbox = mailbox.Maildir(defaults.cache)
     mbox.lock()
     try:
@@ -221,12 +221,12 @@ def read_mail_cache(rss_list):
             try:
                 byte_pickle = message.get_payload(decode=True)
             except:
-                print ("Unable to open cache file ignoring")
+                print("Unable to open cache file ignoring")
                 continue
 
             for rss in rss_list:
-                print ("    Comparing {0} to {1}".format(message['subject'],
-                                                         rss.name))
+                print("    Comparing {0} to {1}".format(message['subject'],
+                                                        rss.name))
                 if rss.name == message['subject']:
                     print("Found cache for {0}".format(rss.name))
                     rss.cache = feedparser.parse(byte_pickle)
@@ -255,12 +255,12 @@ def write_mail_cache(rss_list):
 
     # Ensure mail cache is empty, so that we do not produce duplicates
     # clear_mail_cache()
-    print ("Writing mail cache {0}".format(defaults.cache))
+    print("Writing mail cache {0}".format(defaults.cache))
     mbox = mailbox.Maildir(defaults.cache)
     mbox.lock()
     try:
         for f in rss_list:
-            print ("Saving at: {0}".format(f.name))
+            print("Saving at: {0}".format(f.name))
             msg = mailbox.MaildirMessage()
 
             msg.__setitem__('Date',
@@ -276,8 +276,8 @@ def write_mail_cache(rss_list):
 
                 mbox.add(msg)
 
-            except:
-                print ("Unable to create cache object for {0}".format(f.name))
+            except Exception as e:
+                print("Unable to create cache object for {0} -> {1}".format(f.name, e))
                 continue
 
             mbox.flush()
@@ -296,7 +296,7 @@ def extract_new_items(new_list, old_list):
     has_guid = False
 
     if not new_list:
-        print ("Empty list!")
+        print("Empty list!")
         return []
 
     if "id" in new_list[0]:
@@ -329,10 +329,9 @@ def download_feed(feed):
     """
 
     if feed.url is None:
-        print ("No viable url found! Aborting feed...")
+        print("No viable url found! Aborting feed...")
         return False
 
-    print ("Downloading '{0}'...".format(feed.url))
     print("Downloading '{0}'...".format(feed.url))
     user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 
@@ -344,7 +343,7 @@ def download_feed(feed):
     feed.feed = feedparser.parse(feed.xml)
 
     if not feed.feed:
-        print ("Unable to download {0}".format(feed.url))
+        print("Unable to download {0}".format(feed.url))
         return
 
     if feed.cache is not None:
@@ -352,7 +351,7 @@ def download_feed(feed):
         new_entries = extract_new_items(feed.feed.entries, feed.cache.entries)
 
         for item in new_entries:
-            print ("    New entry: {0}".format(item.title))
+            print("    New entry: {0}".format(item.title))
     else:
         # it is a new feed
         new_entries = feed.feed.entries
@@ -364,12 +363,12 @@ def download_feed(feed):
             update_maildir(maildir, item, feed.feed['feed']['title'])
 
     else:
-        print ("    No new messages.")
+        print("    No new messages.")
 
 
 def print_help():
     """Prints help text and arguments"""
-    print ("""{0}
+    print("""{0}
 
 Download rss feeds and convert them to maildir entries.
 Options:
