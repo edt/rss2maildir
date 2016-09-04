@@ -22,10 +22,10 @@ import mailbox
 import feedparser
 import sys
 import getopt
-import pickle
 import time
 import json
 import getpass
+import urllib.request
 
 
 class defaults:
@@ -48,6 +48,7 @@ class rss_feed:
         self.maildir = ""
         self.feed = None
         self.cache = None
+        self.xml = None
 
 
 def load_config():
@@ -188,13 +189,14 @@ def load_cache(rss_list):
 
         if os.path.isfile(filename):
             with open(filename, 'rb') as input_file:
-                rss.cache = pickle.load(input_file)
+                rss.cache = feedparser.parse(input_file.read().replace('\n',
+                                                                       ''))
 
 
 def save_object(obj, filename):
     """Save object to given file"""
     with open(filename, 'wb') as output:
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+        output.write(obj)
 
 
 def write_cache(rss_list):
@@ -206,7 +208,7 @@ def write_cache(rss_list):
 
     for rss in rss_list:
         filename = os.path.expanduser(defaults.cache) + "/" + rss.name
-        save_object(rss.feed, filename)
+        save_object(rss.xml, filename)
 
 
 def read_mail_cache(rss_list):
@@ -226,8 +228,8 @@ def read_mail_cache(rss_list):
                 print ("    Comparing {0} to {1}".format(message['subject'],
                                                          rss.name))
                 if rss.name == message['subject']:
-                    print ("Found cache for {0}".format(rss.name))
-                    rss.cache = pickle.loads(byte_pickle)
+                    print("Found cache for {0}".format(rss.name))
+                    rss.cache = feedparser.parse(byte_pickle)
                     mbox.remove(key)
                     mbox.flush()
                     break
@@ -269,11 +271,8 @@ def write_mail_cache(rss_list):
             msg['To'] = defaults.mail_recipient
             msg['Subject'] = f.name
             try:
-                byte_pickle = pickle.dumps(f.feed, protocol=0)
-                # byte_pickle = dill.dumps(f.feed)
-
-                msg.set_payload(byte_pickle)
-                print ("Saving mail cache for {0}".format(f.name))
+                msg.set_payload(f.xml.encode('utf-8'))
+                print("Saving mail cache for {0}".format(f.name))
 
                 mbox.add(msg)
 
@@ -334,7 +333,15 @@ def download_feed(feed):
         return False
 
     print ("Downloading '{0}'...".format(feed.url))
-    feed.feed = feedparser.parse(feed.url)
+    print("Downloading '{0}'...".format(feed.url))
+    user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+
+    headers = {'User-Agent': user_agent, }
+    request = urllib.request.Request(feed.url, None, headers)
+    response = urllib.request.urlopen(request, None, timeout=10)
+    data = response.read()
+    feed.xml = data.decode('utf-8')
+    feed.feed = feedparser.parse(feed.xml)
 
     if not feed.feed:
         print ("Unable to download {0}".format(feed.url))
